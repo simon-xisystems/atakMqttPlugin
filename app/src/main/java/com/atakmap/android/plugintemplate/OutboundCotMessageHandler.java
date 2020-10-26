@@ -70,11 +70,43 @@ public class OutboundCotMessageHandler implements CommsMapComponent.PreSendProce
         timeFormat = new SimpleDateFormat("HH:mm:ss");
         String zuluDate = dateFormat.format(calendar.getTime());
         String zuluTime = timeFormat.format(calendar.getTime());
-        Log.d(TAG, "bob: Sending own position report  " );
-        uiPassThrough send = uiPassThrough.INSTANCE;
-        send.ownLocationReport(cotEvent.toString());
 
 
+        if(cotMessage.getType().equals("u-d-f")){
+            // Log.d(TAG, "bob:  Display Map Drawn Polygon ");
+        }else if(cotMessage.getType().equals("u-d-r")){
+            // Log.d(TAG, "bob:  Display Map Drawn Square ");
+        }else if(cotMessage.getType().equals("u-d-c-c")){
+            // Log.d(TAG, "bob:  Display Map Drawn Circle ");
+        }else if(cotMessage.getType().equals("u-d-f-m")){
+            // Log.d(TAG, "bob:  Display Map freehand ");
+        }else if(cotMessage.getType().equals("b-m-r")){
+            // Log.d(TAG, "bob:  Display Map Route ");
+        }else if(cotMessage.getType().equals("b-t-f")){
+            // Log.d(TAG, "bob:  Display Chat Event ");
+        }else if(cotMessage.getType().equals(casEvent)){
+            // Log.d(TAG, "bob:  Display Casualty Request ");
+
+            //Todo{need a Cas Alert Event to trigger this.}
+
+        }else if(cotMessage.getType().equals("a-f-G-U-C")) {
+            // Log.d(TAG, "bob:  Own Location Report ");
+
+            Log.d(TAG, "bob: Sending own position report  " );
+
+
+
+            uiPassThrough send = uiPassThrough.INSTANCE;
+            send.ownLocationReport(cotEvent.toString());
+
+
+
+        }else{
+
+
+            Log.d(TAG, "bob: Sending point item");
+
+        }
 
     }
 

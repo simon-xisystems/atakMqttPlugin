@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.view.View
 import android.widget.Button
+import android.widget.Toast
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import com.atak.plugins.impl.PluginLayoutInflater
@@ -14,17 +15,17 @@ import com.atakmap.android.plugintemplate.mqtt.Mqttmanager
 import com.atakmap.android.plugintemplate.plugin.R
 import com.atakmap.comms.CommsMapComponent
 import com.atakmap.coremap.log.Log
-import org.eclipse.paho.android.service.MqttAndroidClient
-import org.eclipse.paho.client.mqttv3.*
-import java.lang.Exception
+
 
 class PluginTemplateDropDownReceiver(mapView: MapView?,
                                      private val pluginContext: Context) : DropDownReceiver(mapView), OnStateListener {
     private val templateView: View
-    private var cotHandler: CotHandler? = null
+
     private val lifeCycleOwner: LifecycleOwner
     private var outboundCotMessageHandler: OutboundCotMessageHandler? = null
+
    // private lateinit var mqttClient: MqttAndroidClient
+
     /**************************** CONSTRUCTOR  */
     init {
 
@@ -50,7 +51,11 @@ class PluginTemplateDropDownReceiver(mapView: MapView?,
                     HALF_HEIGHT, false)
 
             //this.cotHandler = CotHandler(CommsMapComponent.getInstance(), getMapView().context)
-            this.outboundCotMessageHandler = OutboundCotMessageHandler(CommsMapComponent.getInstance(), getMapView().context)
+            //this.outboundCotMessageHandler = OutboundCotMessageHandler(CommsMapComponent.getInstance(), getMapView().context)
+            val handler = CotHandler()
+            handler.OutboundCotMessageHandler(CommsMapComponent.getInstance(),mapView.context)
+
+
 
             val mqttManager = Mqttmanager(mapView.context)
             mqttManager.connectMqtt()
@@ -68,7 +73,7 @@ class PluginTemplateDropDownReceiver(mapView: MapView?,
 
             ownloc.observe(lifeCycleOwner, Observer {ownCot ->
                 mqttManager.publish(topic, ownCot)
-                println("bob: send a cot $ownCot")
+                Toast.makeText(mapView.context, "MQTT Send to $topic",Toast.LENGTH_SHORT).show()
 
             })
 

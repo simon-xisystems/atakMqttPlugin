@@ -1,80 +1,94 @@
 package com.atakmap.android.plugintemplate
 
 import android.content.Context
-import android.os.Handler
-import android.util.Log
+import com.atakmap.android.plugintemplate.mqtt.lffiMessage
+import com.atakmap.android.plugintemplate.mqtt.movementRecord
+import com.atakmap.android.plugintemplate.mqtt.positionRecord
 import com.atakmap.comms.CommsMapComponent
-import com.atakmap.comms.CommsMapComponent.PreSendProcessor
 import com.atakmap.coremap.cot.event.CotEvent
+import com.atakmap.coremap.maps.time.CoordinatedTime
 import java.text.SimpleDateFormat
 import java.util.*
 
-/*
- *
- * Class to grab out going COT messages so we can tie in LSA conversion to outgoin ATAK events.
- *
- * This is called by on registration, now need to add fucntioality for all handlers for outgoing
- * messages.
- *
- * */
-class CotHandler(private val commsMapComponent: CommsMapComponent,
+class CotHandler: CommsMapComponent.PreSendProcessor {
+    private var commsMapComponent1: CommsMapComponent? = null
+    private var atakContext1: Context? = null
 
-                 private val atakContext: Context
-) : PreSendProcessor {
-    fun destroy() {
-        commsMapComponent.registerPreSendProcessor(null)
-    }
-
-    /*
-     * So thought about calling a seperate instance of this class for each event type, but only
-     * calls last instanciated instance instead, hence the if else
-     *
-     * */
-    override fun processCotEvent(cotEvent: CotEvent, toUIDs: Array<String>) {
-        //Log.d(TAG, "bob: " + cotEvent + " UIDs: " + Arrays.toString(toUIDs));
-        println("bob: processing cot event $cotEvent")
-        val type = cotEvent.type
-        val casEvent = "b-r-f-h-c"
-        //Log.d(TAG, "bob: " + cotMessage.getType() );
-        val calendar = Calendar.getInstance()
-        val dateFormat: SimpleDateFormat
-        dateFormat = SimpleDateFormat("yyyy-MM-dd")
-        val timeFormat: SimpleDateFormat
-        timeFormat = SimpleDateFormat("HH:mm:ss")
-        val zuluDate = dateFormat.format(calendar.time)
-        val zuluTime = timeFormat.format(calendar.time)
-        if (cotEvent.type == "u-d-f") {
-            // Log.d(TAG, "bob:  Display Map Drawn Polygon ");
-        } else if (cotEvent.type == "u-d-r") {
-            // Log.d(TAG, "bob:  Display Map Drawn Square ");
-        } else if (cotEvent.type == "u-d-c-c") {
-            // Log.d(TAG, "bob:  Display Map Drawn Circle ");
-        } else if (cotEvent.type == "u-d-f-m") {
-            // Log.d(TAG, "bob:  Display Map freehand ");
-        } else if (cotEvent.type == "b-m-r") {
-            // Log.d(TAG, "bob:  Display Map Route ");
-        } else if (cotEvent.type == "b-t-f") {
-            // Log.d(TAG, "bob:  Display Chat Event ");
-        } else if (cotEvent.type == casEvent) {
-            // Log.d(TAG, "bob:  Display Casualty Request ");
-
-            //Todo{need a Cas Alert Event to trigger this.}
-        } else if (cotEvent.type == "a-f-G-U-C") {
-            // Log.d(TAG, "bob:  Own Location Report ");
-
-            val send = uiPassThrough
-            send.ownLocationReport(cotEvent.toString())
-            Log.d(TAG, "bob: Sending own position report  ")
-        } else {
-            Log.d(TAG, "bob: Sending point item")
-        }
-    }
-
-    companion object {
-        private val TAG = CotHandler::class.java.simpleName
-    }
-
-    init {
+    fun OutboundCotMessageHandler(commsMapComponent: CommsMapComponent,
+                                  atakContext: Context
+    ) {
+        commsMapComponent1 = commsMapComponent
+        atakContext1 = atakContext
         commsMapComponent.registerPreSendProcessor(this)
     }
+
+    override fun processCotEvent(cotEvent: CotEvent?, toUID: Array<out String>?) {
+
+
+        println("bob: COT Event Processed")
+
+        var trackPositionData = positionRecord(
+                 latitudeInDecimalDegrees = cotEvent!!.geoPoint!!.latitude,
+                 longitudeInDecimalDegrees = cotEvent!!.geoPoint!!.longitude,
+                 zuluTimeOfFix = cotEvent?.time as CoordinatedTime ,
+                 horizontalAccuracyInM = cotEvent?.geoPoint.ce,
+                 altitudeInM = cotEvent?.geoPoint.altitude,
+                 verticalAccuracyInM =cotEvent?.geoPoint.le
+        )
+
+
+        var movementData = movementRecord(
+                bearing = 0.00f,
+                bearingAccuracy = 0.00f,
+                speed = 0.00f,
+                speedAccuracy = 0.00f,
+                inclination = 0.00f,
+                inclinationAccuracy =0.00f
+        )
+
+
+        var lffi = lffiMessage(
+                trackSourceTransponderId = cotEvent.uid,
+                trackSourceSystem = "ATAK",
+                trackSecurity = "unclassified",
+                trackSIDC = "",
+                trackPositionalData = trackPositionData,
+                trackMovementData = movementData
+        )
+
+        val casEvent = "b-r-f-h-c"
+
+
+
+
+        val cotMessage = cotEvent!!
+        val type = cotMessage.type
+
+
+        when{
+
+            cotMessage.type =="u-d-f" -> println("bob: Display Map Drawn Polygon ")
+            cotMessage.type == "u-d-r" -> println("bob: Display Map Drawn Square  ")
+            cotMessage.type == "u-d-c-c" -> println("bob: Display Map Drawn Circle ")
+            cotMessage.type == "u-d-f-m" -> println("bob:  Display Map freehand  ")
+            cotMessage.type == "b-m-r" -> println("bob: Display Map Route  ")
+            cotMessage.type == "b-t-f" -> println("bob:  Display Chat Event ")
+            cotMessage.type == "b-r-f-h-c" ->  println("bob:  Display Casualty Request ")
+            cotMessage.type == "a-f-G-U-C" ->{
+                println("bob:  Sending own position report ")
+                lffi.trackSIDC = "SFGPUCI-----"
+                uiPassThrough.ownLocationReport(lffi.toString())
+            }
+
+            else -> println("bob:  point item ")
+
+        }
+
+
+
+
+
+
+    }
+
 }
