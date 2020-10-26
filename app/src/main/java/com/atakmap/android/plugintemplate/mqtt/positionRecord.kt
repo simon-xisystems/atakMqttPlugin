@@ -11,13 +11,13 @@ class positionRecord(
         var verticalAccuracyInM: Double
 ) {
     override fun toString(): String {
-        return "positionRecord [" +
+        return "positionRecord ," +
                 "latitudeInDecimalDegrees: ${this.latitudeInDecimalDegrees}," +
                 "longitudeInDecimalDegrees: ${this.longitudeInDecimalDegrees}," +
                 "zuluTimeOfFix: ${this.zuluTimeOfFix}," +
                 "horizontalAccuracyInM:, ${this.horizontalAccuracyInM}," +
                 "altitudeInM: ${this.altitudeInM}," +
-                "verticalAccuracyInM: ${this.verticalAccuracyInM}]"
+                "verticalAccuracyInM: ${this.verticalAccuracyInM}"
 
 
     }

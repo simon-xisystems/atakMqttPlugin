@@ -10,7 +10,7 @@ class lffiMessage(
 {
 
     override fun toString(): String {
-        return "Lffi [" +
+        return "Lffi, " +
                 "trackSourceTransponderId: ${this.trackSourceTransponderId}, " +
                 "trackSourceSystem: ${this.trackSourceSystem}, " +
                 "trackSecurity: ${this.trackSecurity}, " +

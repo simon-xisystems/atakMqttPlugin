@@ -11,14 +11,14 @@ class movementRecord(
 ) {
 
     override fun toString(): String {
-        return "movementRecord [" +
+        return "movementRecord ," +
                 "bearing:${this.bearing}," +
                 "bearingAccuracy: ${this.bearingAccuracy}," +
                 "speed: ${this.speed}," +
                 "speedAccuracy: ${this.speedAccuracy}," +
                 "inclination: ${this.inclination}," +
-                "inclinationAccuracy: ${this.inclinationAccuracy}" +
-                "]"
+                "inclinationAccuracy: ${this.inclinationAccuracy}"
+
 
 
     }

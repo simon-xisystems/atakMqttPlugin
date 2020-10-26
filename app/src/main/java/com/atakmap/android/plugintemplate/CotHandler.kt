@@ -7,6 +7,8 @@ import com.atakmap.android.plugintemplate.mqtt.positionRecord
 import com.atakmap.comms.CommsMapComponent
 import com.atakmap.coremap.cot.event.CotEvent
 import com.atakmap.coremap.maps.time.CoordinatedTime
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -27,13 +29,17 @@ class CotHandler: CommsMapComponent.PreSendProcessor {
 
         println("bob: COT Event Processed")
 
+        val gson = Gson()
+
+
+
         var trackPositionData = positionRecord(
                  latitudeInDecimalDegrees = cotEvent!!.geoPoint!!.latitude,
                  longitudeInDecimalDegrees = cotEvent!!.geoPoint!!.longitude,
                  zuluTimeOfFix = cotEvent?.time as CoordinatedTime ,
                  horizontalAccuracyInM = cotEvent?.geoPoint.ce,
-                 altitudeInM = cotEvent?.geoPoint.altitude,
-                 verticalAccuracyInM =cotEvent?.geoPoint.le
+                 altitudeInM = 0.00,
+                 verticalAccuracyInM =0.00
         )
 
 
@@ -75,9 +81,11 @@ class CotHandler: CommsMapComponent.PreSendProcessor {
             cotMessage.type == "b-t-f" -> println("bob:  Display Chat Event ")
             cotMessage.type == "b-r-f-h-c" ->  println("bob:  Display Casualty Request ")
             cotMessage.type == "a-f-G-U-C" ->{
-                println("bob:  Sending own position report ")
+                println("bob:  Sending own position report $lffi")
                 lffi.trackSIDC = "SFGPUCI-----"
-                uiPassThrough.ownLocationReport(lffi.toString())
+                val jsonLffi = gson.toJson(lffi)
+                println("json: $jsonLffi")
+                uiPassThrough.ownLocationReport(jsonLffi)
             }
 
             else -> println("bob:  point item ")
