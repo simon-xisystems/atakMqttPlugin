@@ -9,7 +9,7 @@ object uiPassThrough {
 
     fun ownLocationReport(report: String){
         ownReport.postValue(report)
-        println("bob: sending ownReport $report")
+
 
     }
 

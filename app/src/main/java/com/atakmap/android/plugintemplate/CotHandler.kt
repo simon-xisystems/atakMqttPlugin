@@ -32,7 +32,6 @@ class CotHandler: CommsMapComponent.PreSendProcessor {
         val gson = Gson()
 
 
-
         var trackPositionData = positionRecord(
                  latitudeInDecimalDegrees = cotEvent!!.geoPoint!!.latitude,
                  longitudeInDecimalDegrees = cotEvent!!.geoPoint!!.longitude,
@@ -41,7 +40,6 @@ class CotHandler: CommsMapComponent.PreSendProcessor {
                  altitudeInM = 0.00,
                  verticalAccuracyInM =0.00
         )
-
 
         var movementData = movementRecord(
                 bearing = 0.00f,
@@ -61,6 +59,16 @@ class CotHandler: CommsMapComponent.PreSendProcessor {
                 trackPositionalData = trackPositionData,
                 trackMovementData = movementData
         )
+
+
+        var lffiMessage = {
+            "trackSourceTransponderId:" + cotEvent.uid +
+                    "zuluTimeOfFix:" + cotEvent.time +
+                    "latitudeInDecimalDegrees:" + cotEvent.geoPoint.latitude +
+                    "longitudeInDecimalDegrees:" + cotEvent.geoPoint.longitude
+
+        }
+
 
         val casEvent = "b-r-f-h-c"
 
@@ -84,8 +92,8 @@ class CotHandler: CommsMapComponent.PreSendProcessor {
                 println("bob:  Sending own position report $lffi")
                 lffi.trackSIDC = "SFGPUCI-----"
                 val jsonLffi = gson.toJson(lffi)
-                println("json: $jsonLffi")
-                uiPassThrough.ownLocationReport(jsonLffi)
+                //println("json: $jsonLffi")
+                uiPassThrough.ownLocationReport(lffi.toString())
             }
 
             else -> println("bob:  point item ")

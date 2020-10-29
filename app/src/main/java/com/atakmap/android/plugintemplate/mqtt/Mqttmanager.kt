@@ -42,7 +42,7 @@ class Mqttmanager(
                 }
 
                 override fun onFailure(asyncActionToken: IMqttToken?, exception: Throwable?) {
-                    println("bob: MQTT Broker connection failure")
+                    println("bob: MQTT Broker connection failure $exception")
                 }
 
 

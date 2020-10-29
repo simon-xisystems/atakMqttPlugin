@@ -55,6 +55,8 @@ class PluginTemplateDropDownReceiver(mapView: MapView?,
             val handler = CotHandler()
             handler.OutboundCotMessageHandler(CommsMapComponent.getInstance(),mapView.context)
 
+            startMqttService()
+
 
 
             val mqttManager = Mqttmanager(mapView.context)
@@ -83,10 +85,6 @@ class PluginTemplateDropDownReceiver(mapView: MapView?,
             }
 
 
-
-//            connectMqtt(mapView.context)
-//            mqttSubscribe("testtopic/#")
-
         }
     }
 
@@ -94,6 +92,23 @@ class PluginTemplateDropDownReceiver(mapView: MapView?,
     override fun onDropDownVisible(v: Boolean) {}
     override fun onDropDownSizeChanged(width: Double, height: Double) {}
     override fun onDropDownClose() {}
+    fun startMqttService(){
+        val requestCode = 1
+        val serviceIntent = Intent(mapView?.context, org.eclipse.paho.android.service.MqttService::class.java)
+        //serviceIntent.setPackage(mapView?.context?.packageName)
+        //serviceIntent.action = "org.eclipse.paho.android.service.MqttService"
+        try{
+            mapView?.context?.startService(serviceIntent)
+        }catch(e: java.lang.Exception){
+            println("bob: service didnt start $e")
+        }
+
+        println("bob: starting MQTT Serivce")
+
+    }
+
+
+
 
     companion object {
         val TAG = PluginTemplateDropDownReceiver::class.java
