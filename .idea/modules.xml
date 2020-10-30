@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/app.iml" group="plugintemplate/app" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/plugintemplate.iml" filepath="$PROJECT_DIR$/.idea/modules/plugintemplate.iml" group="plugintemplate" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/app.iml" group="atakMqttPlugin/app" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/atakMqttPlugin.iml" filepath="$PROJECT_DIR$/.idea/modules/atakMqttPlugin.iml" group="atakMqttPlugin" />
     </modules>
   </component>
 </project>

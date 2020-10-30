@@ -15,20 +15,21 @@ class Mqttmanager(
     fun connectMqtt() {
 
         val serverURI = "tcp://broker.hivemq.com:1883"
+
         mqttClient = MqttAndroidClient(context, serverURI, "atak_client")
         mqttClient.setCallback(object : MqttCallback {
             override fun messageArrived(topic: String?, message: MqttMessage?) {
-                println("bob: MQTT Message Arrived $message : $topic")
+                println("MQTT: MQTT Message Arrived $message : $topic")
 
             }
 
             override fun connectionLost(cause: Throwable?) {
-                println("bob: MQTT Broker Connection Lost")
+                println("MQTT: MQTT Broker Connection Lost")
             }
 
 
             override fun deliveryComplete(token: IMqttDeliveryToken?) {
-                println("bob: MQTT delivery complete")
+                println("MQTT: MQTT delivery complete")
             }
 
         })
@@ -37,18 +38,18 @@ class Mqttmanager(
         try {
             mqttClient.connect(options, context, object : IMqttActionListener {
                 override fun onSuccess(asyncActionToken: IMqttToken?) {
-                    println("bob: MQTT Broker connection success")
+                    println("MQTT: MQTT Broker connection success")
                     subscribe()
                 }
 
                 override fun onFailure(asyncActionToken: IMqttToken?, exception: Throwable?) {
-                    println("bob: MQTT Broker connection failure $exception")
+                    println("MQTT: MQTT Broker connection failure $exception")
                 }
 
 
             })
         } catch (e: Exception) {
-            println("bob: Mqttclinent.connect error $e")
+            println("MQTT: Mqttclinent.connect error $e")
         }
 
 
@@ -65,7 +66,7 @@ class Mqttmanager(
                     // Give your callback on Subscription here
                     if(topic.contains("atak")){
 
-                        println("bob:  subscribed to $topic")
+                        println("MQTT:  subscribed to $topic")
                     }
 
                 }
@@ -75,12 +76,12 @@ class Mqttmanager(
                         exception: Throwable
                 ) {
                     // Give your subscription failure callback here
-                    println("bob: Subscription failure")
+                    println("MQTT: Subscription failure")
                 }
             })
         } catch (e: MqttException) {
             // Give your subscription failure callback here
-            println("bob: $e : exception")
+            println("MQTT: $e : exception")
         }
 
 
@@ -97,11 +98,11 @@ class Mqttmanager(
             mqttClient.publish(topic, message)
         } catch (e: Exception) {
 
-            println("bob: publish error $e")
+            println("MQTT: publish error $e")
             // Give Callback on error here
         } catch (e: MqttException) {
             // Give Callback on error here
-            println("bob: publish error $e")
+            println("MQTT: publish error $e")
         }
     }
 

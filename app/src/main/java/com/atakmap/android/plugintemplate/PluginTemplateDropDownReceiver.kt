@@ -22,9 +22,7 @@ class PluginTemplateDropDownReceiver(mapView: MapView?,
     private val templateView: View
 
     private val lifeCycleOwner: LifecycleOwner
-    private var outboundCotMessageHandler: OutboundCotMessageHandler? = null
 
-   // private lateinit var mqttClient: MqttAndroidClient
 
     /**************************** CONSTRUCTOR  */
     init {
@@ -50,30 +48,29 @@ class PluginTemplateDropDownReceiver(mapView: MapView?,
             showDropDown(templateView, HALF_WIDTH, FULL_HEIGHT, FULL_WIDTH,
                     HALF_HEIGHT, false)
 
-            //this.cotHandler = CotHandler(CommsMapComponent.getInstance(), getMapView().context)
-            //this.outboundCotMessageHandler = OutboundCotMessageHandler(CommsMapComponent.getInstance(), getMapView().context)
+        //declare out COT handler, allowing the plugin to pick up on outgoing COT
+
             val handler = CotHandler()
             handler.OutboundCotMessageHandler(CommsMapComponent.getInstance(),mapView.context)
 
-            startMqttService()
-
-
-
+           //initialise out MQTT client
             val mqttManager = Mqttmanager(mapView.context)
             mqttManager.connectMqtt()
 
 
+            //Grab our call sign for the test MQTT button
             val callSign = mapView.deviceCallsign
 
-
+            //a random made up topic
             val topic = "testtopic/atak"
 
             val mqttButton = templateView.findViewById<Button>(R.id.mqttPublish)
 
-
+            //initialise out singleton, allowing us to trigger live data updates from Cot events.
             val ownloc = uiPassThrough.ownReport
 
             ownloc.observe(lifeCycleOwner, Observer {ownCot ->
+                //when live data observation occurs send a MQTT message
                 mqttManager.publish(topic, ownCot)
                 Toast.makeText(mapView.context, "MQTT Send to $topic",Toast.LENGTH_SHORT).show()
 
@@ -81,6 +78,7 @@ class PluginTemplateDropDownReceiver(mapView: MapView?,
 
 
             mqttButton.setOnClickListener {
+                //publish a MQTT topic when we hit the test button.
                 mqttManager.publish(topic, callSign)
             }
 
@@ -92,20 +90,7 @@ class PluginTemplateDropDownReceiver(mapView: MapView?,
     override fun onDropDownVisible(v: Boolean) {}
     override fun onDropDownSizeChanged(width: Double, height: Double) {}
     override fun onDropDownClose() {}
-    fun startMqttService(){
-        val requestCode = 1
-        val serviceIntent = Intent(mapView?.context, org.eclipse.paho.android.service.MqttService::class.java)
-        //serviceIntent.setPackage(mapView?.context?.packageName)
-        //serviceIntent.action = "org.eclipse.paho.android.service.MqttService"
-        try{
-            mapView?.context?.startService(serviceIntent)
-        }catch(e: java.lang.Exception){
-            println("bob: service didnt start $e")
-        }
 
-        println("bob: starting MQTT Serivce")
-
-    }
 
 
 

@@ -6,7 +6,6 @@ object uiPassThrough {
 
     val ownReport = MutableLiveData<String>()
 
-
     fun ownLocationReport(report: String){
         ownReport.postValue(report)
 

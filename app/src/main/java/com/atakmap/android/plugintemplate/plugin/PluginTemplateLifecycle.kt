@@ -46,7 +46,7 @@ class PluginTemplateLifecycle(private val pluginContext: Context) : Lifecycle {
             }
         }
 
-        //startMqttService()
+        startMqttService()
 
     }
 
@@ -79,17 +79,17 @@ class PluginTemplateLifecycle(private val pluginContext: Context) : Lifecycle {
     }
 
     fun startMqttService(){
-        val requestCode = 1
+
         val serviceIntent = Intent(mapView?.context, org.eclipse.paho.android.service.MqttService::class.java)
-        //serviceIntent.setPackage(mapView?.context?.packageName)
-        //serviceIntent.action = "org.eclipse.paho.android.service.MqttService"
+
+
         try{
             mapView?.context?.startService(serviceIntent)
         }catch(e: java.lang.Exception){
-            println("bob: service didnt start $e")
+            println("MQTT: service didnt start $e")
         }
 
-        println("bob: starting MQTT Serivce")
+
 
     }
 
